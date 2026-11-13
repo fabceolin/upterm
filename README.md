@@ -702,6 +702,27 @@ helm repo update
 helm install uptermd upterm/uptermd
 ```
 
+With `websocket.enabled`, the chart creates an Ingress and a cert-manager `Issuer`
+that gets a Let's Encrypt certificate over HTTP-01 through ingress-nginx. To use an
+Issuer or ClusterIssuer you already have, and another ingress controller, turn the
+chart's Issuer off and set the class:
+
+```yaml
+hostname: upterm.example.com
+websocket:
+  enabled: true
+  issuer:
+    create: false
+  ingress:
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+```
+
+`websocket.ingress.className` sets `spec.ingressClassName`. When it is empty, the
+chart sets the deprecated `kubernetes.io/ingress.class` annotation from
+`websocket.ingress_nginx_ingress_class`, as before.
+
 ### Fly.io
 
 The cheapest way to deploy a worry-free [Upterm server](https://github.com/owenthereal/upterm/tree/master/cmd/uptermd) (a.k.a. `uptermd`) is to use [Fly.io](https://fly.io).

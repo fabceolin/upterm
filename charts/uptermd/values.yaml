@@ -83,5 +83,15 @@ websocket:
   enabled: false
   cert_manager_acme_email: your_email
   ingress_nginx_ingress_class: nginx
+  issuer:
+    # Create a cert-manager Issuer (Let's Encrypt, HTTP-01) for the Ingress.
+    # Set to false to use an existing Issuer or ClusterIssuer instead: add its
+    # cert-manager.io/issuer or cert-manager.io/cluster-issuer annotation under
+    # websocket.ingress.annotations.
+    create: true
   ingress:
+    # Ingress class, written as spec.ingressClassName (for example traefik).
+    # When empty, the deprecated kubernetes.io/ingress.class annotation is set
+    # from ingress_nginx_ingress_class instead.
+    className: ""
     annotations: {}

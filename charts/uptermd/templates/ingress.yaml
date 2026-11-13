@@ -6,16 +6,23 @@ metadata:
   labels:
     {{- include "upterm.labels" . | nindent 4 }}
   annotations:
+    {{- if not .Values.websocket.ingress.className }}
     kubernetes.io/ingress.class: {{ .Values.websocket.ingress_nginx_ingress_class }}
+    {{- end }}
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/limit-connections: "4"
     nginx.ingress.kubernetes.io/limit-rps: "5"
+    {{- if .Values.websocket.issuer.create }}
     cert-manager.io/issuer: {{ include "upterm.fullname" . }}-letsencrypt
+    {{- end }}
     {{- with .Values.websocket.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+    {{- with .Values.websocket.ingress.className }}
+    ingressClassName: {{ . }}
+    {{- end }}
     tls:
       - hosts:
         - {{ .Values.hostname }}

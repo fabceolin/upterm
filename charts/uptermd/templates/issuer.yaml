@@ -1,4 +1,4 @@
-{{- if .Values.websocket.enabled }}
+{{- if and .Values.websocket.enabled .Values.websocket.issuer.create }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
