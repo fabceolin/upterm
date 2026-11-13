@@ -48,8 +48,10 @@ spec:
             - $(POD_IP):22
             - --hostname
             - {{ .Values.hostname }}
-            {{- if .Values.host_keys_existing_secret.name }}
-            {{- range .Values.host_keys_existing_secret.keys }}
+            {{- $hk := .Values.host_keys_existing_secret | default dict }}
+            {{- if $hk.name }}
+            {{- if not $hk.keys }}{{ fail "host_keys_existing_secret.keys must name at least one private key file in the Secret" }}{{ end }}
+            {{- range $hk.keys }}
             - --private-key
             - /host-keys/{{ . }}
             {{- end }}
@@ -103,7 +105,7 @@ spec:
       volumes:
         - name: host-keys
           secret:
-            secretName: {{ .Values.host_keys_existing_secret.name | default (include "upterm.fullname" .) }}
+            secretName: {{ (.Values.host_keys_existing_secret | default dict).name | default (include "upterm.fullname" .) }}
             defaultMode: 0600
         {{- if gt (len .Values.authorized_keys) 0 }}
         - name: authorized-keys

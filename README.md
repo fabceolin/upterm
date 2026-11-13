@@ -721,7 +721,8 @@ websocket:
 
 `websocket.ingress.className` sets `spec.ingressClassName`. When it is empty, the
 chart sets the deprecated `kubernetes.io/ingress.class` annotation from
-`websocket.ingress_nginx_ingress_class`, as before.
+`websocket.ingress_nginx_ingress_class`, as before. With the chart's own Issuer, the
+HTTP-01 solver uses the same class (`ingressClassName`, cert-manager 1.12 or later).
 
 The server's host keys can come from a Secret you create yourself, so they are not
 in your values and an upgrade cannot replace them by accident:
@@ -741,7 +742,13 @@ podSecurityContext:
 ```
 
 The chart then creates no Secret of its own and passes one `--private-key` for each
-entry of `keys`.
+entry of `keys`. An empty `keys` list fails the render, because uptermd would
+otherwise make a new host key on every start.
+
+To keep the keys of an existing release, copy them into a Secret with another name
+first. Do not point `host_keys_existing_secret.name` at the chart's own Secret
+(`<release>-uptermd` or the fullname): the chart no longer renders that Secret, so
+the upgrade deletes it and the keys with it.
 
 ### Fly.io
 

@@ -72,6 +72,8 @@ host_keys: {}
 # passes one --private-key for each entry of keys. Keys kept here do not have to
 # be passed again on every upgrade. The uptermd image runs as uid 65532 and reads
 # the keys only with podSecurityContext.fsGroup set, for example to 65532.
+# keys must name at least one file: an empty list fails the render. Do not reuse
+# the name of the chart's own Secret, which an upgrade then deletes.
 # Example:
 #   host_keys_existing_secret:
 #     name: uptermd-host-key

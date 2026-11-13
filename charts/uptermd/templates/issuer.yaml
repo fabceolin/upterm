@@ -1,4 +1,4 @@
-{{- if and .Values.websocket.enabled .Values.websocket.issuer.create }}
+{{- if and .Values.websocket.enabled (dig "issuer" "create" true .Values.websocket) }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -18,5 +18,9 @@ spec:
    solvers:
    - http01:
        ingress:
+         {{- with .Values.websocket.ingress.className }}
+         ingressClassName: {{ . }}
+         {{- else }}
          class: {{ .Values.websocket.ingress_nginx_ingress_class }}
+         {{- end }}
 {{- end }}

@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/limit-connections: "4"
     nginx.ingress.kubernetes.io/limit-rps: "5"
-    {{- if .Values.websocket.issuer.create }}
+    {{- if dig "issuer" "create" true .Values.websocket }}
     cert-manager.io/issuer: {{ include "upterm.fullname" . }}-letsencrypt
     {{- end }}
     {{- with .Values.websocket.ingress.annotations }}
