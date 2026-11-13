@@ -48,11 +48,18 @@ spec:
             - $(POD_IP):22
             - --hostname
             - {{ .Values.hostname }}
+            {{- if .Values.host_keys_existing_secret.name }}
+            {{- range .Values.host_keys_existing_secret.keys }}
+            - --private-key
+            - /host-keys/{{ . }}
+            {{- end }}
+            {{- else }}
             {{- range $key, $val := .Values.host_keys }}
             {{ if hasSuffix ".pub" $key }}
             {{ else }}
             - --private-key
             - /host-keys/{{ $key }}
+            {{- end }}
             {{- end }}
             {{- end }}
             - --network
@@ -96,7 +103,7 @@ spec:
       volumes:
         - name: host-keys
           secret:
-            secretName: {{ include "upterm.fullname" . }}
+            secretName: {{ .Values.host_keys_existing_secret.name | default (include "upterm.fullname" .) }}
             defaultMode: 0600
         {{- if gt (len .Values.authorized_keys) 0 }}
         - name: authorized-keys

@@ -723,6 +723,26 @@ websocket:
 chart sets the deprecated `kubernetes.io/ingress.class` annotation from
 `websocket.ingress_nginx_ingress_class`, as before.
 
+The server's host keys can come from a Secret you create yourself, so they are not
+in your values and an upgrade cannot replace them by accident:
+
+```console
+ssh-keygen -t ed25519 -N '' -f ssh_host_ed25519_key
+kubectl create secret generic uptermd-host-key --from-file=ssh_host_ed25519_key
+```
+
+```yaml
+host_keys_existing_secret:
+  name: uptermd-host-key
+  keys:
+    - ssh_host_ed25519_key
+podSecurityContext:
+  fsGroup: 65532 # the uptermd image runs as uid 65532
+```
+
+The chart then creates no Secret of its own and passes one `--private-key` for each
+entry of `keys`.
+
 ### Fly.io
 
 The cheapest way to deploy a worry-free [Upterm server](https://github.com/owenthereal/upterm/tree/master/cmd/uptermd) (a.k.a. `uptermd`) is to use [Fly.io](https://fly.io).

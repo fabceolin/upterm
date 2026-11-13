@@ -67,6 +67,20 @@ affinity: {}
 
 host_keys: {}
 
+# An existing Secret that holds the server's private host keys, used instead of
+# host_keys. The chart then creates no Secret, mounts this one at /host-keys and
+# passes one --private-key for each entry of keys. Keys kept here do not have to
+# be passed again on every upgrade. The uptermd image runs as uid 65532 and reads
+# the keys only with podSecurityContext.fsGroup set, for example to 65532.
+# Example:
+#   host_keys_existing_secret:
+#     name: uptermd-host-key
+#     keys:
+#       - ssh_host_ed25519_key
+host_keys_existing_secret:
+  name: ""
+  keys: []
+
 # SSH public keys (in `authorized_keys` line format, one entry per list item)
 # permitted to register as hosts on this uptermd. When empty, any client may
 # register. Edits require restarting uptermd to take effect.
